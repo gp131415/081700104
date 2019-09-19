@@ -1,8 +1,8 @@
-﻿// data_.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+// data_.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
 //
 
-#include "pch.h"
-#include <Windows.h>
+//#include "pch.h"
+//#include <Windows.h>
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
@@ -675,16 +675,16 @@ int main() {
 	jjj.pb(26426);
 	kkk.pb(22320);
 	kkk.pb(22336);
-	string instring[110];
+	vector<string> instring;
 	int cnt_cnt = 0;
 	string tt_temp;
 	while (fin >> tt_temp) {
 		cnt_cnt++;
-		instring[cnt_cnt] = tt_temp;
+		instring.push_back(tt_temp);
 	}
 	fout << "[";
 	int num_cnt = 0;
-	for (int ii = 1; ii <= cnt_cnt; ii++)
+	for (int ii = 0; ii < cnt_cnt; ii++)
 	{
 		if (num_cnt != 0) fout << ","; num_cnt = 1;
 		//cout << instring << endl;
