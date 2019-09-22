@@ -672,6 +672,7 @@ int main(int argv, char** argc){
 		temp.preprossing();
 		temp.choose_demend();
 		temp.PRINT();
+		output<<"\n";
 	}
 	output<<"]";
 	
