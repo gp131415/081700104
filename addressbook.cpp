@@ -1,8 +1,11 @@
+﻿// addressbook.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
+//
+
 // data_.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
 //
 
-//#include "pch.h"
-//#include <Windows.h>
+#include "pch.h"
+#include <Windows.h>
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
@@ -32,7 +35,7 @@ struct data_all {
 	int len_place_cut;
 };
 //3215
-wstring aaa,bbb,ccc,ddd,eee,fff,ggg,hhh,iii,jjj,kkk;
+wstring aaa, bbb, ccc, ddd, eee, fff, ggg, hhh, iii, jjj, kkk;
 /*北京市 上海市 重庆市 天津市 北京 上海 重庆 天津 名字 手机 地址
 */
 
@@ -185,449 +188,481 @@ wstring UTF8ToUnicode(const string & str) {
 	return strOutGBK;
 }*/
 
-class set_data{
-	public:
-		string to_be_solve;//输入每行
-		string name;
-		string phone_num;
-		string address[10];//address[0]存储未划分的地址初始状态；
-		int demend_kind; //五级、七级、七级缺省补充
-		set_data(string string_input) :to_be_solve(""), name(""), phone_num("") {
-			to_be_solve = string_input;
-		}
-		~set_data() {};
-		void preprossing(){
-			int tt;
-			tt = to_be_solve[0] - '0';
-			demend_kind = tt;
-			rep(i, 0, 9) address[i] = "";
-			int t_1 = 0, t_2 = 0; //电话号码前、电话号码后部分
-			int len = to_be_solve.length();
-			int pos = 0;//下标位置
-			pos = 2;
-			int cnt = 0;//copy下来子串下标
+class set_data {
+public:
+	string to_be_solve;//输入每行
+	string name;
+	string phone_num;
+	string address[10];//address[0]存储未划分的地址初始状态；
+	int demend_kind; //五级、七级、七级缺省补充
+	set_data(string string_input) :to_be_solve(""), name(""), phone_num("") {
+		to_be_solve = string_input;
+	}
+	~set_data() {};
+	void preprossing() {
+		int tt;
+		tt = to_be_solve[0] - '0';
+		demend_kind = tt;
+		rep(i, 0, 9) address[i] = "";
+		int t_1 = 0, t_2 = 0; //电话号码前、电话号码后部分
+		int len = to_be_solve.length();
+		int pos = 0;//下标位置
+		pos = 2;
+		int cnt = 0;//copy下来子串下标
 
-			while (to_be_solve[pos] != ',') {//处理姓名
-				name += to_be_solve[pos];
-				pos++;
-			}
-			pos++;//跳过','
-			
-			rep(i, pos, len) {//处理电话
-				if (to_be_solve[i] >= '0'&&to_be_solve[i] <= '9') {
-					bool flag = true;//是否为电话
-					rep(j, i + 1, i + 11) {
-						if (to_be_solve[j] < '0' || to_be_solve[j] > '9') flag = false;
-					}
-					if (flag == true) {
-						rep(j, i, i + 11) phone_num += to_be_solve[j];
-						t_1 = i - 1, t_2 = i + 11;
-						break;
-					}
+		while (to_be_solve[pos] != ',') {//处理姓名
+			name += to_be_solve[pos];
+			pos++;
+		}
+		pos++;//跳过','
+
+		rep(i, pos, len) {//处理电话
+			if (to_be_solve[i] >= '0'&&to_be_solve[i] <= '9') {
+				bool flag = true;//是否为电话
+				rep(j, i + 1, i + 11) {
+					if (to_be_solve[j] < '0' || to_be_solve[j] > '9') flag = false;
+				}
+				if (flag == true) {
+					rep(j, i, i + 11) phone_num += to_be_solve[j];
+					t_1 = i - 1, t_2 = i + 11;
+					break;
 				}
 			}
-			
-			string tt_s = "";
-			rep(i, pos, t_1 + 1) 
-				tt_s += to_be_solve[i];
-			rep(i, t_2, len-1) //'.'不考虑
-				tt_s += to_be_solve[i];
-			address[0] = tt_s;
-			//cout << name << endl << phone_num << endl << address[0] << endl;
-			//cout<<address[0]<<endl;
 		}
-		void choose_demend() {
-			if (demend_kind == 1) demend_1();
-			else if (demend_kind == 2) demend_2();
-			else if (demend_kind == 3) demend_3();
-		}
-		void demend_1() {
-		
-			wstring ss=(UTF8ToUnicode(address[0]));
-			int len=ss.length();
-			
-			wstring temp;
-			wstring _temp;
-			int pos=0; int cmp_len=-1;
-			int cmp_id=-1;
-			for(int k=0;k<3;k++) {//次数
-			for(int j=0;j<3215;j++){
+
+		string tt_s = "";
+		rep(i, pos, t_1 + 1)
+			tt_s += to_be_solve[i];
+		rep(i, t_2, len - 1) //'.'不考虑
+			tt_s += to_be_solve[i];
+		address[0] = tt_s;
+		//cout << name << endl << phone_num << endl << address[0] << endl;
+		//cout<<address[0]<<endl;
+	}
+	void choose_demend() {
+		if (demend_kind == 1) demend_1();
+		else if (demend_kind == 2) demend_2();
+		else if (demend_kind == 3) demend_3();
+	}
+	void demend_1() {
+
+		wstring ss = (UTF8ToUnicode(address[0]));
+		int len = ss.length();
+
+		wstring temp;
+		wstring _temp;
+		int pos = 0; int cmp_len = -1;
+		int cmp_id = -1;
+		for (int k = 0; k < 3; k++) {//次数
+			for (int j = 0; j < 3215; j++) {
 				temp.clear();
-				for(int i=0;i<_data[j].len_place_cut;i++) temp.pb(_data[j].place_cut[i]);
-				_temp=ss.substr(pos,_data[j].len_place_cut);
-				if(_temp==temp){
-					if(_data[j].len_place_cut>cmp_len) cmp_len=_data[j].len_place_cut,cmp_id=j;
+				for (int i = 0; i < _data[j].len_place_cut; i++) temp.pb(_data[j].place_cut[i]);
+				_temp = ss.substr(pos, _data[j].len_place_cut);
+				if (_temp == temp) {
+					if (_data[j].len_place_cut > cmp_len) cmp_len = _data[j].len_place_cut, cmp_id = j;
 				}
 			}
-			if(cmp_id==-1) break;
-			
-			temp=ss.substr(pos,_data[cmp_id].len_place);
+			if (cmp_id == -1) break;
+
+			temp = ss.substr(pos, _data[cmp_id].len_place);
 			_temp.clear();
-			for(int i=0;i<_data[cmp_id].len_place;i++)
-			_temp.pb(_data[cmp_id].place[i]);
-			
+			for (int i = 0; i < _data[cmp_id].len_place; i++)
+				_temp.pb(_data[cmp_id].place[i]);
+
 			//string xxx=UnicodeToUTF8(temp); cout<<xxx<<endl;
-			if(temp!=_temp&&temp.length()==2) break;
-			
-			
-			if(temp!=_temp) temp=ss.substr(pos,_data[cmp_id].len_place_cut),pos+=_data[cmp_id].len_place_cut;
-			else pos+=_data[cmp_id].len_place;
+			if (temp != _temp && temp.length() == 2) break;
+
+
+			if (temp != _temp) temp = ss.substr(pos, _data[cmp_id].len_place_cut), pos += _data[cmp_id].len_place_cut;
+			else pos += _data[cmp_id].len_place;
 			//string xxx=UnicodeToUTF8(temp); cout<<xxx<<endl;
-			if(_data[cmp_id].id%1000==0&&address[1]=="") address[1]=UnicodeToUTF8(temp);
-			else if(_data[cmp_id].id%100==0) address[2]=UnicodeToUTF8(temp);
-			else address[3]=UnicodeToUTF8(temp);
+			if (_data[cmp_id].id % 1000 == 0 && address[1] == "") address[1] = UnicodeToUTF8(temp);
+			else if (_data[cmp_id].id % 100 == 0) address[2] = UnicodeToUTF8(temp);
+			else address[3] = UnicodeToUTF8(temp);
 			//cout<<address[1]<<endl;
 			//1!小美,北京市东15822153326城区交道口东大街1号北京市东城区人民法院.
-			cmp_id=-1;cmp_len=-1;
-			}
-			//直辖市特判
-			if(address[1]==UnicodeToUTF8(aaa)) {address[1]="";
-			address[2]=UnicodeToUTF8(aaa);}
-			if(address[1]==UnicodeToUTF8(ddd)){ address[1]="";
-			 address[2]=UnicodeToUTF8(ddd);}
-			if(address[1]==UnicodeToUTF8(bbb)){ address[1]=""; 
-			address[2]=UnicodeToUTF8(bbb); }
-			if(address[1]==UnicodeToUTF8(ccc)){ address[1]=""; 
-			address[2]=UnicodeToUTF8(ccc); }
-			 
-			/*
-			_data
-			int id;
-			int place[20];
-			int len_place;
-			int place_cut[20];
-			int len_place_cut;
-			wstring ss; pos
-			*/
-			wstring rest_ss=ss.substr(pos);	
-			//乡 镇 街道 20065 38215 34903 36947 
-			int llen=rest_ss.length();
-			pos=-1;
-			for(int i=1;i<llen;i++){
-				if(rest_ss[i]==20065||rest_ss[i]==38215||(rest_ss[i-1]==34903&&rest_ss[i]==36947)){
-					pos=i; break;
-				}
-			}
-			temp.clear();
-			if(pos!=-1)
-			for(int i=0;i<=pos;i++) temp.pb(rest_ss[i]);
-			address[4]=UnicodeToUTF8(temp);
-			if(pos==-1) pos=0;
-			else pos++;
-			address[5]=UnicodeToUTF8(rest_ss.substr(pos));
-			if(address[3]=="凤")
-			if(address[3].length()==3) address[4]=address[3]+address[4],address[3]="";
+			cmp_id = -1; cmp_len = -1;
 		}
-		void demend_2() {
-			
-wstring ss=(UTF8ToUnicode(address[0]));
-			int len=ss.length();
-			
-			wstring temp;
-			wstring _temp;
-			int pos=0; int cmp_len=-1;
-			int cmp_id=-1;
-			for(int k=0;k<3;k++) {//次数
-			for(int j=0;j<3215;j++){
+		//直辖市特判
+		if (address[1] == UnicodeToUTF8(aaa)) {
+			address[1] = "";
+			address[2] = UnicodeToUTF8(aaa);
+		}
+		if (address[1] == UnicodeToUTF8(ddd)) {
+			address[1] = "";
+			address[2] = UnicodeToUTF8(ddd);
+		}
+		if (address[1] == UnicodeToUTF8(bbb)) {
+			address[1] = "";
+			address[2] = UnicodeToUTF8(bbb);
+		}
+		if (address[1] == UnicodeToUTF8(ccc)) {
+			address[1] = "";
+			address[2] = UnicodeToUTF8(ccc);
+		}
+
+		/*
+		_data
+		int id;
+		int place[20];
+		int len_place;
+		int place_cut[20];
+		int len_place_cut;
+		wstring ss; pos
+		*/
+		wstring rest_ss = ss.substr(pos);
+		//乡 镇 街道 20065 38215 34903 36947 
+		int llen = rest_ss.length();
+		pos = -1;
+		for (int i = 1; i < llen; i++) {
+			if (rest_ss[i] == 20065 || rest_ss[i] == 38215 || (rest_ss[i - 1] == 34903 && rest_ss[i] == 36947)) {
+				pos = i; break;
+			}
+		}
+		temp.clear();
+		if (pos != -1)
+			for (int i = 0; i <= pos; i++) temp.pb(rest_ss[i]);
+		address[4] = UnicodeToUTF8(temp);
+		if (pos == -1) pos = 0;
+		else pos++;
+		address[5] = UnicodeToUTF8(rest_ss.substr(pos));
+	//	if (address[3] == "凤")
+	//		if (address[3].length() == 3) address[4] = address[3] + address[4], address[3] = "";
+	}
+	void demend_2() {
+
+		wstring ss = (UTF8ToUnicode(address[0]));
+		int len = ss.length();
+
+		wstring temp;
+		wstring _temp;
+		int pos = 0; int cmp_len = -1;
+		int cmp_id = -1;
+		for (int k = 0; k < 3; k++) {//次数
+			for (int j = 0; j < 3215; j++) {
 				temp.clear();
-				for(int i=0;i<_data[j].len_place_cut;i++) temp.pb(_data[j].place_cut[i]);
-				_temp=ss.substr(pos,_data[j].len_place_cut);
-				if(_temp==temp){
-					if(_data[j].len_place_cut>cmp_len) cmp_len=_data[j].len_place_cut,cmp_id=j;
+				for (int i = 0; i < _data[j].len_place_cut; i++) temp.pb(_data[j].place_cut[i]);
+				_temp = ss.substr(pos, _data[j].len_place_cut);
+				if (_temp == temp) {
+					if (_data[j].len_place_cut > cmp_len) cmp_len = _data[j].len_place_cut, cmp_id = j;
 				}
 			}
-			if(cmp_id==-1) break;
-			
-			temp=ss.substr(pos,_data[cmp_id].len_place);
+			if (cmp_id == -1) break;
+
+			temp = ss.substr(pos, _data[cmp_id].len_place);
 			_temp.clear();
-			for(int i=0;i<_data[cmp_id].len_place;i++)
-			_temp.pb(_data[cmp_id].place[i]);
-			
+			for (int i = 0; i < _data[cmp_id].len_place; i++)
+				_temp.pb(_data[cmp_id].place[i]);
+
 			//string xxx=UnicodeToUTF8(temp); cout<<xxx<<endl;
-			
-			if(temp!=_temp) temp=ss.substr(pos,_data[cmp_id].len_place_cut),pos+=_data[cmp_id].len_place_cut;
-			else pos+=_data[cmp_id].len_place;
+
+			if (temp != _temp) temp = ss.substr(pos, _data[cmp_id].len_place_cut), pos += _data[cmp_id].len_place_cut;
+			else pos += _data[cmp_id].len_place;
 			//string xxx=UnicodeToUTF8(temp); cout<<xxx<<endl;
-			if(_data[cmp_id].id%1000==0&&address[1]=="") address[1]=UnicodeToUTF8(temp);
-			else if(_data[cmp_id].id%100==0) address[2]=UnicodeToUTF8(temp);
-			else address[3]=UnicodeToUTF8(temp);
+			if (_data[cmp_id].id % 1000 == 0 && address[1] == "") address[1] = UnicodeToUTF8(temp);
+			else if (_data[cmp_id].id % 100 == 0) address[2] = UnicodeToUTF8(temp);
+			else address[3] = UnicodeToUTF8(temp);
 			//cout<<address[1]<<endl;
 			//1!小美,北京市东15822153326城区交道口东大街1号北京市东城区人民法院.
-			cmp_id=-1;cmp_len=-1;
-			}
-			//直辖市特判
-			if(address[1]==UnicodeToUTF8(aaa)) {address[1]="";
-			address[2]=UnicodeToUTF8(aaa);}
-			if(address[1]==UnicodeToUTF8(ddd)){ address[1]="";
-			 address[2]=UnicodeToUTF8(ddd);}
-			if(address[1]==UnicodeToUTF8(bbb)){ address[1]=""; 
-			address[2]=UnicodeToUTF8(bbb); }
-			if(address[1]==UnicodeToUTF8(ccc)){ address[1]=""; 
-			address[2]=UnicodeToUTF8(ccc); }
-			/*
-			_data
-			int id;
-			int place[20];
-			int len_place;
-			int place_cut[20];
-			int len_place_cut;
-			wstring ss; pos
-			*/
-			wstring rest_ss=ss.substr(pos);	
-			//乡 镇 街道 20065 38215 34903 36947 
-			int llen=rest_ss.length();
-			pos=-1;
-			for(int i=1;i<llen;i++){
-				if(rest_ss[i]==20065||rest_ss[i]==38215||(rest_ss[i-1]==34903&&rest_ss[i]==36947)){
-					pos=i; break;
-				}
-			}
-			temp.clear();
-			if(pos!=-1)
-			for(int i=0;i<=pos;i++) temp.pb(rest_ss[i]);
-			address[4]=UnicodeToUTF8(temp);
-			if(pos==-1) pos=0;
-			else pos++;
-			
-			rest_ss=rest_ss.substr(pos);
-			pos=0;
-			llen=rest_ss.length();
-			//号 路 21495 36335
-			 
-			for(int i=0;i<llen;i++)
-			if(rest_ss[i]==36335){
-				temp.clear();
-				temp=rest_ss.substr(0,i+1);
-				pos=i+1;
-				address[5]=UnicodeToUTF8(temp);
-				break;
-			}
-			//cout<<address[5]<<endl;
-			
-			rest_ss=rest_ss.substr(pos); llen=rest_ss.length();
-
-			//cout<<UnicodeToUTF8(rest_ss)<<endl;
-			pos=0;
-			for(int i=0;i<llen;i++)
-			if(rest_ss[i]==21495){
-				temp=rest_ss.substr(0,i+1);
-				pos=i+1;
-				address[6]=UnicodeToUTF8(temp);
-				break;
-				}
-			rest_ss=rest_ss.substr(pos);
-			address[7]=UnicodeToUTF8(rest_ss);
+			cmp_id = -1; cmp_len = -1;
 		}
-		void demend_3() {
-					
-		wstring ss=(UTF8ToUnicode(address[0]));
-					int len=ss.length();
-					
-					wstring temp;
-					wstring _temp;
-					int pos=0; int cmp_len=-1;
-					int cmp_id=-1;
-					for(int k=0;k<3;k++) {//次数
-					for(int j=0;j<3215;j++){
-						temp.clear();
-						for(int i=0;i<_data[j].len_place_cut;i++) temp.pb(_data[j].place_cut[i]);
-						_temp=ss.substr(pos,_data[j].len_place_cut);
-						if(_temp==temp){
-							if(_data[j].len_place_cut>cmp_len) cmp_len=_data[j].len_place_cut,cmp_id=j;
-						}
-					}
-					if(cmp_id==-1) break;
-					wstring ttemp;
-					temp=ss.substr(pos,_data[cmp_id].len_place);
-					ttemp=temp;
-					_temp.clear();
-					for(int i=0;i<_data[cmp_id].len_place;i++)
-					_temp.pb(_data[cmp_id].place[i]);
-					//string xxx=UnicodeToUTF8(temp); cout<<xxx<<endl;
-					
-					if(temp!=_temp) temp=ss.substr(pos,_data[cmp_id].len_place_cut),pos+=_data[cmp_id].len_place_cut;
-					else pos+=_data[cmp_id].len_place;
-					//string xxx=UnicodeToUTF8(temp); cout<<xxx<<endl;
-					if(_data[cmp_id].id%1000==0&&address[1]=="") address[1]=UnicodeToUTF8(ttemp);
-					else if(_data[cmp_id].id%100==0) address[2]=UnicodeToUTF8(ttemp);
-					else address[3]=UnicodeToUTF8(ttemp);
-					//cout<<address[1]<<endl;
-					//1!小美,北京市东15822153326城区交道口东大街1号北京市东城区人民法院.
-					cmp_id=-1;cmp_len=-1;
-					}
-					//直辖市特判
-			if(address[1]==UnicodeToUTF8(aaa)) {address[1]=UnicodeToUTF8(eee);
-			address[2]=UnicodeToUTF8(aaa);}
-			if(address[1]==UnicodeToUTF8(ddd)){ address[1]=UnicodeToUTF8(fff);
-			 address[2]=UnicodeToUTF8(ddd);}
-			if(address[1]==UnicodeToUTF8(bbb)){ address[1]=UnicodeToUTF8(ggg); 
-			address[2]=UnicodeToUTF8(bbb); }
-			if(address[1]==UnicodeToUTF8(ccc)){ address[1]=UnicodeToUTF8(hhh); 
-			address[2]=UnicodeToUTF8(ccc); }
-					 
-					/*
-					_data
-					int id;
-					int place[20];
-					int len_place;
-					int place_cut[20];
-					int len_place_cut;
-					wstring ss; pos
-					*/
-					wstring rest_ss=ss.substr(pos);	
-					//乡 镇 街道 20065 38215 34903 36947 
-					int llen=rest_ss.length();
-					pos=-1;
-					for(int i=1;i<llen;i++){
-						if(rest_ss[i]==20065||rest_ss[i]==38215||(rest_ss[i-1]==34903&&rest_ss[i]==36947)){
-							pos=i; break;
-						}
-					}
-					temp.clear();
-					if(pos!=-1)
-					for(int i=0;i<=pos;i++) temp.pb(rest_ss[i]);
-					address[4]=UnicodeToUTF8(temp);
-					if(pos==-1) pos=0;
-					else pos++;
-					
-					rest_ss=rest_ss.substr(pos);
-					pos=0;
-					llen=rest_ss.length();
-					//号 路 21495 36335
-					 
-					for(int i=0;i<llen;i++)
-					if(rest_ss[i]==36335){
-						temp.clear();
-						temp=rest_ss.substr(0,i+1);
-						pos=i+1;
-						address[5]=UnicodeToUTF8(temp);
-						break;
-					}
-					//cout<<address[5]<<endl;
-					
-					rest_ss=rest_ss.substr(pos); llen=rest_ss.length();
-
-					//cout<<UnicodeToUTF8(rest_ss)<<endl;
-					pos=0;
-					for(int i=0;i<llen;i++)
-					if(rest_ss[i]==21495){
-						temp=rest_ss.substr(0,i+1);
-						pos=i+1;
-						address[6]=UnicodeToUTF8(temp);
-						break;
-						}
-					rest_ss=rest_ss.substr(pos);
-					address[7]=UnicodeToUTF8(rest_ss);
-					/*
-					_data
-					int id;
-					int place[20];
-					int len_place;
-					int place_cut[20];
-					int len_place_cut;
-					wstring ss; pos
-					*/
-					int temp_id=-1;
-				if(address[2]==""&&address[3]!=""){
-					for(int i=0;i<3215;i++){
-						temp.clear();
-						for(int j=0;j<_data[i].len_place;j++){
-							temp.push_back(_data[i].place[j]);
-						}
-						if(UnicodeToUTF8(temp)==address[3]){
-							temp_id=_data[i].id;
-							break;
-						}
-					}
-				}
-				if(temp_id!=-1){
-					temp_id=temp_id/100; temp_id*=100; 
-					temp.clear();
-					for(int i=0;i<3215;i++){
-						if(temp_id==_data[i].id){
-						for(int j=0;j<_data[i].len_place;j++){
-							temp.push_back(_data[i].place[j]);
-						}
-						address[2]=UnicodeToUTF8(temp);
-						break;
-					}
-				}
-				}
-				
-				
-				if(address[1]==""&&address[2]!=""){
-					for(int i=0;i<3215;i++){
-						temp.clear();
-						for(int j=0;j<_data[i].len_place;j++){
-							temp.push_back(_data[i].place[j]);
-						}
-						if(UnicodeToUTF8(temp)==address[3]){
-							temp_id=_data[i].id;
-							break;
-						}
-					}
-				}
-				if(temp_id!=-1){
-					temp_id=temp_id/1000; temp_id*=1000; 
-					temp.clear();
-					for(int i=0;i<3215;i++){
-						if(temp_id==_data[i].id){
-						for(int j=0;j<_data[i].len_place;j++){
-							temp.push_back(_data[i].place[j]);
-						}
-						address[1]=UnicodeToUTF8(temp);
-						break;
-					}
-				}
-				}
-		if(address[1]==UnicodeToUTF8(aaa)) {address[1]=UnicodeToUTF8(eee);
-		address[2]=UnicodeToUTF8(aaa);}
-		if(address[1]==UnicodeToUTF8(ddd)){ address[1]=UnicodeToUTF8(fff);
-		 address[2]=UnicodeToUTF8(ddd);}
-		if(address[1]==UnicodeToUTF8(bbb)){ address[1]=UnicodeToUTF8(ggg); 
-		address[2]=UnicodeToUTF8(bbb); }
-		if(address[1]==UnicodeToUTF8(ccc)){ address[1]=UnicodeToUTF8(hhh); 
-		address[2]=UnicodeToUTF8(ccc); }
-				
+		//直辖市特判
+		if (address[1] == UnicodeToUTF8(aaa)) {
+			address[1] = "";
+			address[2] = UnicodeToUTF8(aaa);
+		}
+		if (address[1] == UnicodeToUTF8(ddd)) {
+			address[1] = "";
+			address[2] = UnicodeToUTF8(ddd);
+		}
+		if (address[1] == UnicodeToUTF8(bbb)) {
+			address[1] = "";
+			address[2] = UnicodeToUTF8(bbb);
+		}
+		if (address[1] == UnicodeToUTF8(ccc)) {
+			address[1] = "";
+			address[2] = UnicodeToUTF8(ccc);
+		}
+		/*
+		_data
+		int id;
+		int place[20];
+		int len_place;
+		int place_cut[20];
+		int len_place_cut;
+		wstring ss; pos
+		*/
+		wstring rest_ss = ss.substr(pos);
+		//乡 镇 街道 20065 38215 34903 36947 
+		int llen = rest_ss.length();
+		pos = -1;
+		for (int i = 1; i < llen; i++) {
+			if (rest_ss[i] == 20065 || rest_ss[i] == 38215 || (rest_ss[i - 1] == 34903 && rest_ss[i] == 36947)) {
+				pos = i; break;
 			}
+		}
+		temp.clear();
+		if (pos != -1)
+			for (int i = 0; i <= pos; i++) temp.pb(rest_ss[i]);
+		address[4] = UnicodeToUTF8(temp);
+		if (pos == -1) pos = 0;
+		else pos++;
 
-		void PRINT() {
-		
-				output<<"{\"";
-				output<<UnicodeToUTF8(iii);
-				output<<"\":\"";
-				output<<name<<"\",\"";
-				output<<UnicodeToUTF8(jjj);
-				output<<"\":\""<<phone_num;
-				output<<"\",\"";
-				output<<UnicodeToUTF8(kkk);
-				output<<"\":";
-				if(demend_kind==1){
-					output<<"[";
-					output<<'"'<<address[1]<<'"';
-					for(int i=2;i<=5;i++){
-					output<<","<<'"'<<address[i]<<'"';
-						}
-					output<<"]";
+		rest_ss = rest_ss.substr(pos);
+		pos = 0;
+		llen = rest_ss.length();
+		//号 路 21495 36335
+
+		for (int i = 0; i < llen; i++)
+			if (rest_ss[i] == 36335) {
+				temp.clear();
+				temp = rest_ss.substr(0, i + 1);
+				pos = i + 1;
+				address[5] = UnicodeToUTF8(temp);
+				break;
+			}
+		//cout<<address[5]<<endl;
+
+		rest_ss = rest_ss.substr(pos); llen = rest_ss.length();
+
+		//cout<<UnicodeToUTF8(rest_ss)<<endl;
+		pos = 0;
+		for (int i = 0; i < llen; i++)
+			if (rest_ss[i] == 21495) {
+				temp = rest_ss.substr(0, i + 1);
+				pos = i + 1;
+				address[6] = UnicodeToUTF8(temp);
+				break;
+			}
+		rest_ss = rest_ss.substr(pos);
+		address[7] = UnicodeToUTF8(rest_ss);
+	}
+	void demend_3() {
+
+		wstring ss = (UTF8ToUnicode(address[0]));
+		int len = ss.length();
+
+		wstring temp;
+		wstring _temp;
+		int pos = 0; int cmp_len = -1;
+		int cmp_id = -1;
+		for (int k = 0; k < 3; k++) {//次数
+			for (int j = 0; j < 3215; j++) {
+				temp.clear();
+				for (int i = 0; i < _data[j].len_place_cut; i++) temp.pb(_data[j].place_cut[i]);
+				_temp = ss.substr(pos, _data[j].len_place_cut);
+				if (_temp == temp) {
+					if (_data[j].len_place_cut > cmp_len) cmp_len = _data[j].len_place_cut, cmp_id = j;
 				}
-				else if(demend_kind==2||demend_kind==3){
-					output<<"[";
-					output<<'"'<<address[1]<<'"';
-					for(int i=2;i<=7;i++){
-					output<<","<<'"'<<address[i]<<'"';
-						}
-					output<<"]";
+			}
+			if (cmp_id == -1) break;
+			wstring ttemp;
+			temp = ss.substr(pos, _data[cmp_id].len_place);
+			ttemp = temp;
+			_temp.clear();
+			for (int i = 0; i < _data[cmp_id].len_place; i++)
+				_temp.pb(_data[cmp_id].place[i]);
+			//string xxx=UnicodeToUTF8(temp); cout<<xxx<<endl;
+
+			if (temp != _temp) temp = ss.substr(pos, _data[cmp_id].len_place_cut), pos += _data[cmp_id].len_place_cut;
+			else pos += _data[cmp_id].len_place;
+			//string xxx=UnicodeToUTF8(temp); cout<<xxx<<endl;
+			if (_data[cmp_id].id % 1000 == 0 && address[1] == "") address[1] = UnicodeToUTF8(ttemp);
+			else if (_data[cmp_id].id % 100 == 0) address[2] = UnicodeToUTF8(ttemp);
+			else address[3] = UnicodeToUTF8(ttemp);
+			//cout<<address[1]<<endl;
+			//1!小美,北京市东15822153326城区交道口东大街1号北京市东城区人民法院.
+			cmp_id = -1; cmp_len = -1;
+		}
+		//直辖市特判
+		if (address[1] == UnicodeToUTF8(aaa)) {
+			address[1] = UnicodeToUTF8(eee);
+			address[2] = UnicodeToUTF8(aaa);
+		}
+		if (address[1] == UnicodeToUTF8(ddd)) {
+			address[1] = UnicodeToUTF8(fff);
+			address[2] = UnicodeToUTF8(ddd);
+		}
+		if (address[1] == UnicodeToUTF8(bbb)) {
+			address[1] = UnicodeToUTF8(ggg);
+			address[2] = UnicodeToUTF8(bbb);
+		}
+		if (address[1] == UnicodeToUTF8(ccc)) {
+			address[1] = UnicodeToUTF8(hhh);
+			address[2] = UnicodeToUTF8(ccc);
+		}
+
+		/*
+		_data
+		int id;
+		int place[20];
+		int len_place;
+		int place_cut[20];
+		int len_place_cut;
+		wstring ss; pos
+		*/
+		wstring rest_ss = ss.substr(pos);
+		//乡 镇 街道 20065 38215 34903 36947 
+		int llen = rest_ss.length();
+		pos = -1;
+		for (int i = 1; i < llen; i++) {
+			if (rest_ss[i] == 20065 || rest_ss[i] == 38215 || (rest_ss[i - 1] == 34903 && rest_ss[i] == 36947)) {
+				pos = i; break;
+			}
+		}
+		temp.clear();
+		if (pos != -1)
+			for (int i = 0; i <= pos; i++) temp.pb(rest_ss[i]);
+		address[4] = UnicodeToUTF8(temp);
+		if (pos == -1) pos = 0;
+		else pos++;
+
+		rest_ss = rest_ss.substr(pos);
+		pos = 0;
+		llen = rest_ss.length();
+		//号 路 21495 36335
+
+		for (int i = 0; i < llen; i++)
+			if (rest_ss[i] == 36335) {
+				temp.clear();
+				temp = rest_ss.substr(0, i + 1);
+				pos = i + 1;
+				address[5] = UnicodeToUTF8(temp);
+				break;
+			}
+		//cout<<address[5]<<endl;
+
+		rest_ss = rest_ss.substr(pos); llen = rest_ss.length();
+
+		//cout<<UnicodeToUTF8(rest_ss)<<endl;
+		pos = 0;
+		for (int i = 0; i < llen; i++)
+			if (rest_ss[i] == 21495) {
+				temp = rest_ss.substr(0, i + 1);
+				pos = i + 1;
+				address[6] = UnicodeToUTF8(temp);
+				break;
+			}
+		rest_ss = rest_ss.substr(pos);
+		address[7] = UnicodeToUTF8(rest_ss);
+		/*
+		_data
+		int id;
+		int place[20];
+		int len_place;
+		int place_cut[20];
+		int len_place_cut;
+		wstring ss; pos
+		*/
+		int temp_id = -1;
+		if (address[2] == ""&&address[3] != "") {
+			for (int i = 0; i < 3215; i++) {
+				temp.clear();
+				for (int j = 0; j < _data[i].len_place; j++) {
+					temp.push_back(_data[i].place[j]);
 				}
-				output<<"}";
-		}							
+				if (UnicodeToUTF8(temp) == address[3]) {
+					temp_id = _data[i].id;
+					break;
+				}
+			}
+		}
+		if (temp_id != -1) {
+			temp_id = temp_id / 100; temp_id *= 100;
+			temp.clear();
+			for (int i = 0; i < 3215; i++) {
+				if (temp_id == _data[i].id) {
+					for (int j = 0; j < _data[i].len_place; j++) {
+						temp.push_back(_data[i].place[j]);
+					}
+					address[2] = UnicodeToUTF8(temp);
+					break;
+				}
+			}
+		}
+
+
+		if (address[1] == ""&&address[2] != "") {
+			for (int i = 0; i < 3215; i++) {
+				temp.clear();
+				for (int j = 0; j < _data[i].len_place; j++) {
+					temp.push_back(_data[i].place[j]);
+				}
+				if (UnicodeToUTF8(temp) == address[3]) {
+					temp_id = _data[i].id;
+					break;
+				}
+			}
+		}
+		if (temp_id != -1) {
+			temp_id = temp_id / 1000; temp_id *= 1000;
+			temp.clear();
+			for (int i = 0; i < 3215; i++) {
+				if (temp_id == _data[i].id) {
+					for (int j = 0; j < _data[i].len_place; j++) {
+						temp.push_back(_data[i].place[j]);
+					}
+					address[1] = UnicodeToUTF8(temp);
+					break;
+				}
+			}
+		}
+		if (address[1] == UnicodeToUTF8(aaa)) {
+			address[1] = UnicodeToUTF8(eee);
+			address[2] = UnicodeToUTF8(aaa);
+		}
+		if (address[1] == UnicodeToUTF8(ddd)) {
+			address[1] = UnicodeToUTF8(fff);
+			address[2] = UnicodeToUTF8(ddd);
+		}
+		if (address[1] == UnicodeToUTF8(bbb)) {
+			address[1] = UnicodeToUTF8(ggg);
+			address[2] = UnicodeToUTF8(bbb);
+		}
+		if (address[1] == UnicodeToUTF8(ccc)) {
+			address[1] = UnicodeToUTF8(hhh);
+			address[2] = UnicodeToUTF8(ccc);
+		}
+
+	}
+
+	void PRINT() {
+
+		output << "{\"";
+		output << UnicodeToUTF8(iii);
+		output << "\":\"";
+		output << name << "\",\"";
+		output << UnicodeToUTF8(jjj);
+		output << "\":\"" << phone_num;
+		output << "\",\"";
+		output << UnicodeToUTF8(kkk);
+		output << "\":";
+		if (demend_kind == 1) {
+			output << "[";
+			output << '"' << address[1] << '"';
+			for (int i = 2; i <= 5; i++) {
+				output << "," << '"' << address[i] << '"';
+			}
+			output << "]";
+		}
+		else if (demend_kind == 2 || demend_kind == 3) {
+			output << "[";
+			output << '"' << address[1] << '"';
+			for (int i = 2; i <= 7; i++) {
+				output << "," << '"' << address[i] << '"';
+			}
+			output << "]";
+		}
+		output << "}";
+	}
 };
 
-int main(int argv, char** argc){
+int main(int argv, char** argc) {
 	//fin.open(argc[1]);
 	//fout.open(argc[2]);
-    input.open(argc[1]);
+	input.open(argc[1]);
 	output.open(argc[2]);
-	
+
 	aaa.pb(21271);
 	aaa.pb(20140);
 	aaa.pb(24066);
@@ -653,30 +688,42 @@ int main(int argv, char** argc){
 	jjj.pb(25163);
 	jjj.pb(26426);
 	kkk.pb(22320);
-	kkk.pb(22336);	
+	kkk.pb(22336);
 	vector<string> instring;
-	int cnt_cnt=0;
+	int cnt_cnt = 0;
 	string tt_temp;
 	instring.push_back("12");
-	while(input>>tt_temp){
+	while (input >> tt_temp) {
 		cnt_cnt++;
 		instring.push_back(tt_temp);
 	}
-	output<<"[";
-	int num_cnt=0;
-	for(int ii=1;ii<=cnt_cnt;ii++)
+	output << "[";
+	int num_cnt = 0;
+	for (int ii = 1; ii <= cnt_cnt; ii++)
 	{
-		if(num_cnt!=0) output<<","; num_cnt=1;
+		if (num_cnt != 0) output << ","; num_cnt = 1;
 		//cout << instring << endl;
 		set_data temp(instring[ii]);//新建对象
 		temp.preprossing();
 		temp.choose_demend();
 		temp.PRINT();
-		output<<"\n";
+		output << "\n";
 	}
-	output<<"]";
-	
+	output << "]";
+
 	input.close();
 	output.close();
 	return 0;
 }
+
+
+// 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
+// 调试程序: F5 或调试 >“开始调试”菜单
+
+// 入门提示: 
+//   1. 使用解决方案资源管理器窗口添加/管理文件
+//   2. 使用团队资源管理器窗口连接到源代码管理
+//   3. 使用输出窗口查看生成输出和其他消息
+//   4. 使用错误列表窗口查看错误
+//   5. 转到“项目”>“添加新项”以创建新的代码文件，或转到“项目”>“添加现有项”以将现有代码文件添加到项目
+//   6. 将来，若要再次打开此项目，请转到“文件”>“打开”>“项目”并选择 .sln 文件
